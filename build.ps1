@@ -1,0 +1,1 @@
+g++ ./exampleProject/MKTExample.cpp -o ./build/MKT.exe
