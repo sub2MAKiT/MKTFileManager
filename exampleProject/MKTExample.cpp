@@ -19,8 +19,14 @@ int main()
     MKT::Writing MKTW;
     MKT::Reading MKTR;
     MKTRawDataComputed myRawData;
-    int errorCode = 0;
+
     char file[] = "./subscribe.mkt";
+
+    int errorCode = 0;
+    
+    errorCode = MKT_SMART_WRITING_TO_FILE(69, 'C', "./subscribe.mkt");
+
+    
 
     MKTW.writeValue(&a,file,errorCode,MKT_VALUETYPE_CHAR);
     MKTW.writeValue(&b,file,errorCode,MKT_VALUETYPE_CHAR);
@@ -70,8 +76,9 @@ int main()
     intTaken = RETURN_MKT_INT MKTR.dissectValue(myRawData,13,MKT_VALUETYPE_INT,errorCode);
     printf("\ndissected %d",intTaken);
 
+    free(myRawData.MKTRD);
+
     // taken = *(char*)MKTR.dissectValue(myRawData,2,errorCode);
-    // printf("\nValue: %c",taken);
     /*
     B - Boolean
     C - Char

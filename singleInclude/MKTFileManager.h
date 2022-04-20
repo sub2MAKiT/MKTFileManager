@@ -98,17 +98,20 @@ void * MKT::Reading::dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,char
                 if((ValueType&12) == MKT_SMALLER_THAN256)
                 {
                     int finalReturnInt = *((char*)MKTRDC.MKTRD+i);
-                    return &finalReturnInt;
+                    int *finalReturn = &finalReturnInt;
+                    return finalReturn;
                 } else if((ValueType&12) == MKT_SMALLER_THAN65536) {
-                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i) * 256 + *((char*)MKTRDC.MKTRD+i+1);
-                    printf("\nfinal: %d",finalReturnInt);
-                    return &finalReturnInt;
+                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i) + *((char*)MKTRDC.MKTRD+i+1) * 256;
+                    int *finalReturn = &finalReturnInt;
+                    return finalReturn;
                 } else if((ValueType&12) == MKT_SMALLER_THAN16777216) {
-                    int finalReturnInt = (*((char*)MKTRDC.MKTRD+i) * 256 * 256) + (*((char*)MKTRDC.MKTRD+i + 1) * 256) + *((char*)MKTRDC.MKTRD+i + 2);
-                    return &finalReturnInt;
+                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i) + (*((char*)MKTRDC.MKTRD+i + 1) * 256) + (*((char*)MKTRDC.MKTRD+i + 2) * 256 * 256);
+                    int *finalReturn = &finalReturnInt;
+                    return finalReturn;
                 } else if((ValueType&12) == MKT_SMALLER_THAN4294967296) {
                     int finalReturnInt = *((int*)MKTRDC.MKTRD+i);
-                    return &finalReturnInt;
+                    int *finalReturn = &finalReturnInt;
+                    return finalReturn;
                 }
             }
         } else {
@@ -117,7 +120,6 @@ void * MKT::Reading::dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,char
                 if(finalSize + 1 == valueToTake)
                 {
                     char finalReturnChar = (*((char*)MKTRDC.MKTRD+i))&15;
-                    printf("\nfinalReturn: %d",finalReturnChar);
                     char *finalReturn = &finalReturnChar;
                     return finalReturn;
                 }
@@ -334,4 +336,42 @@ long long MKT::Reading::ANDMKT(int a, int b, int c)
     }
     returnValue = (c&finalPower)>>b;
     return returnValue;
+}
+
+// For easier use
+int MKT_SMART_WRITING_TO_FILE(long long value, char valueType, char filename[])
+{
+    int errorCode;
+    MKT::Writing MKTW;
+    if(valueType == 'I')
+    {
+        int IntValue = value;
+        MKTW.writeValue(&IntValue,filename,errorCode,MKT_VALUETYPE_INT);
+    } else if(valueType == 'C') {
+        char CharValue = value;
+        MKTW.writeValue(&CharValue,filename,errorCode,MKT_VALUETYPE_CHAR);
+    } else if(valueType == 'B') {
+        bool BoolValue = value;
+        MKTW.writeValue(&BoolValue,filename,errorCode,MKT_VALUETYPE_BOOL);
+    }
+    return errorCode;
+}
+
+int MKT_SMART_READING_FROM_FILE(void * value,int number, char valueType,char flags, char filename[])
+{
+    int errorCode;
+    MKT::Reading MKTR;
+    MKTRawDataComputed myRawData;
+    myRawData = MKTR.readFile(filename,errorCode);
+    if(valueType == 'I')
+    {
+        *(int*)value = RETURN_MKT_INT MKTR.dissectValue(myRawData,number,flags,errorCode);
+    } else if(valueType == 'C') {
+        *(char*)value = RETURN_MKT_INT MKTR.dissectValue(myRawData,number,flags,errorCode);
+    } else if(valueType == 'B') {
+        *(bool*)value = RETURN_MKT_INT MKTR.dissectValue(myRawData,number,flags,errorCode);
+    }
+    
+    free(myRawData.MKTRD);
+    return errorCode;
 }
