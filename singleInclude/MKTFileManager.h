@@ -25,6 +25,12 @@
 
 #define MKT_UNSIGNED 2
 
+// for data retrieval because I'm not a psychopath
+#define RETURN_MKT_BOOL *(bool*)
+#define RETURN_MKT_HEX *(char*)
+#define RETURN_MKT_CHAR *(char*)
+#define RETURN_MKT_INT *(int*)
+
 
 long long MKT;
 

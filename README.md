@@ -22,3 +22,5 @@ A Read/Write single header cpp library used to manage MKT files
     - Added fully functional char saving/reading
 4. v0.6.0
     - Added fully functional hex saving/reading
+5. v0.7.0
+    - Added fully functional bool saving/reading
