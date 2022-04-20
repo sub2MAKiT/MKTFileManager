@@ -68,11 +68,11 @@ public:
         void readDescriptor(char current, char &sizeOfValue,int &errorCode);
         public:
         MKTRawDataComputed readFile(char filePath[], int &errorCode);
-        void * dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,int &errorCode);
+        void * dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,char ValueType,int &errorCode);
     };
 };
 
-void * MKT::Reading::dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,int &errorCode)
+void * MKT::Reading::dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,char ValueType,int &errorCode)
 {
     if(MKTRDC.sizeOfData < 1)
         errorCode = 2;
@@ -85,12 +85,39 @@ void * MKT::Reading::dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,int 
         readDescriptor(MKTRDC.MKTRD[i],sizeOfValue,errorCode);
         if(finalSize == valueToTake)
         {
-            return (MKTRDC.MKTRD + i);
+            if((ValueType&112) == MKT_VALUETYPE_CHAR)
+                return ((char*)MKTRDC.MKTRD + i);
+            else if((ValueType&112) == MKT_VALUETYPE_INT)
+            {
+                if((ValueType&12) == MKT_SMALLER_THAN256)
+                {
+                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i);
+                    return &finalReturnInt;
+                } else if((ValueType&12) == MKT_SMALLER_THAN65536) {
+                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i) * 256 + *((char*)MKTRDC.MKTRD+i+1);
+                    printf("\nfinal: %d",finalReturnInt);
+                    return &finalReturnInt;
+                } else if((ValueType&12) == MKT_SMALLER_THAN16777216) {
+                    int finalReturnInt = (*((char*)MKTRDC.MKTRD+i) * 256 * 256) + (*((char*)MKTRDC.MKTRD+i + 1) * 256) + *((char*)MKTRDC.MKTRD+i + 2);
+                    return &finalReturnInt;
+                } else if((ValueType&12) == MKT_SMALLER_THAN4294967296) {
+                    int finalReturnInt = *((int*)MKTRDC.MKTRD+i);
+                    return &finalReturnInt;
+                }
+            }
         } else {
             if(sizeOfValue == 0 || sizeOfValue == 127)
-            {} else {
+            {
+                if(finalSize + 1 == valueToTake)
+                {
+                    char finalReturnChar = (*((char*)MKTRDC.MKTRD+i))&15;
+                    printf("\nfinalReturn: %d",finalReturnChar);
+                    char *finalReturn = &finalReturnChar;
+                    return finalReturn;
+                }
+            } else {
                 if(finalSize + 1 != valueToTake)
-                i += sizeOfValue;
+                    i += sizeOfValue;
             }
         }
         finalSize++;
