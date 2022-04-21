@@ -97,20 +97,21 @@ void * MKT::Reading::dissectValue(MKTRawDataComputed MKTRDC,int valueToTake,char
             {
                 if((ValueType&12) == MKT_SMALLER_THAN256)
                 {
-                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i);
-                    int *finalReturn = &finalReturnInt;
+                    unsigned int finalReturnInt = *((unsigned char*)MKTRDC.MKTRD+i);
+                    unsigned int *finalReturn = &finalReturnInt;
                     return finalReturn;
                 } else if((ValueType&12) == MKT_SMALLER_THAN65536) {
-                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i) + *((char*)MKTRDC.MKTRD+i+1) * 256;
-                    int *finalReturn = &finalReturnInt;
+                    unsigned int finalReturnInt = *((unsigned char*)MKTRDC.MKTRD+i) + (*((unsigned char*)MKTRDC.MKTRD+i+1)) * 256;
+                    unsigned int *finalReturn = &finalReturnInt;
                     return finalReturn;
                 } else if((ValueType&12) == MKT_SMALLER_THAN16777216) {
-                    int finalReturnInt = *((char*)MKTRDC.MKTRD+i) + (*((char*)MKTRDC.MKTRD+i + 1) * 256) + (*((char*)MKTRDC.MKTRD+i + 2) * 256 * 256);
-                    int *finalReturn = &finalReturnInt;
+                    unsigned int finalReturnInt = *((unsigned char*)MKTRDC.MKTRD+i) + (*((unsigned char*)MKTRDC.MKTRD+i+1) * 256) + (*((unsigned char*)MKTRDC.MKTRD+i + 2) * 256 * 256);
+                    unsigned int *finalReturn = &finalReturnInt;
                     return finalReturn;
                 } else if((ValueType&12) == MKT_SMALLER_THAN4294967296) {
-                    int finalReturnInt = *((int*)MKTRDC.MKTRD+i);
-                    int *finalReturn = &finalReturnInt;
+                    printf("\ni:%d",i);
+                    unsigned int finalReturnInt = (*((unsigned char*)MKTRDC.MKTRD+i)) + (*((unsigned char*)MKTRDC.MKTRD+i+1) * 256) + (*((unsigned char*)MKTRDC.MKTRD+i + 2) * 256 * 256) + (*((unsigned char*)MKTRDC.MKTRD+i + 3) * 256 * 256 * 256);
+                    unsigned int *finalReturn = &finalReturnInt;
                     return finalReturn;
                 }
             }
@@ -178,7 +179,7 @@ void MKT::Writing::writeValue(void * Value, char filePath[],int &errorCode,char 
             errorCode = 7;
         } else {
             // Write a descriptor
-            if((ValueType&MKT_VALUETYPE_ARRAY )== MKT_VALUETYPE_ARRAY)
+            if((ValueType&MKT_VALUETYPE_ARRAY)== MKT_VALUETYPE_ARRAY)
             {
                 for(int i = 0; i < arraySize;i++)
                 {
@@ -207,7 +208,7 @@ void MKT::Writing::writeValue(void * Value, char filePath[],int &errorCode,char 
                         }
                     }
                 }
-            } else { 
+            } else {
                 if((112&ValueType) == MKT_VALUETYPE_BOOL)
                 {
                     char ValueBool = ValueType|*(bool*)Value;
@@ -223,12 +224,11 @@ void MKT::Writing::writeValue(void * Value, char filePath[],int &errorCode,char 
                     if((ValueType&112) == MKT_VALUETYPE_CHAR)
                     {
                         howManyBytes = 1;
-                    }
-                    else if((ValueType&112) == MKT_VALUETYPE_INT)
+                    } else if((ValueType&112) == MKT_VALUETYPE_INT)
                     {
-                        if((ValueType&12) == MKT_SMALLER_THAN16777216)
+                        if((ValueType&12) == MKT_SMALLER_THAN4294967296)
                             howManyBytes = 4;
-                        else if((ValueType&12) == MKT_SMALLER_THAN4294967296)
+                        else if((ValueType&12) == MKT_SMALLER_THAN16777216)
                             howManyBytes = 3;
                         else if((ValueType&12) == MKT_SMALLER_THAN65536)
                             howManyBytes = 2;

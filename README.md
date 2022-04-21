@@ -1,5 +1,5 @@
 # MKTFileManager
-A Read/Write single header cpp library used to manage MKT files
+A Read/Write single header cpp library used to manage MKT files.
 
 ## Usage:
 There are two ways to use my code, first one is shorter and simpler, whilst the second one is faster and more complex.
@@ -154,3 +154,6 @@ errorCode - error code int
 5. v0.7.1
     - Added simpler functions for writing and reading
     - Upgraded readme
+6. v0.8.0
+    - Added fully functional int saving/reading
+    - Fixed int flags

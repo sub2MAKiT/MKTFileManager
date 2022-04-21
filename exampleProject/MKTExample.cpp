@@ -13,7 +13,7 @@ int main()
     bool falseBool = false;
     char hexValue = 8;
     char hexValuesecond = 10;
-    unsigned int firstInt = 2000;
+    unsigned int firstInt = 16639;// 16639 - 16640
     unsigned int secondInt = 10931472;
 
     MKT::Writing MKTW;
@@ -24,9 +24,7 @@ int main()
 
     int errorCode = 0;
     
-    errorCode = MKT_SMART_WRITING_TO_FILE(69, 'C', "./subscribe.mkt");
-
-    
+    // errorCode = MKT_SMART_WRITING_TO_FILE(69, 'C', "./subscribe.mkt");
 
     MKTW.writeValue(&a,file,errorCode,MKT_VALUETYPE_CHAR);
     MKTW.writeValue(&b,file,errorCode,MKT_VALUETYPE_CHAR);
@@ -40,7 +38,7 @@ int main()
     MKTW.writeValue(&hexValue,file,errorCode,MKT_VALUETYPE_HEX);
     MKTW.writeValue(&hexValuesecond,file,errorCode,MKT_VALUETYPE_HEX);
     MKTW.writeValue(&firstInt,file,errorCode,MKT_VALUETYPE_INT|MKT_SMALLER_THAN65536|MKT_UNSIGNED);
-    MKTW.writeValue(&secondInt,file,errorCode,MKT_VALUETYPE_INT|MKT_UNSIGNED);
+    MKTW.writeValue(&secondInt,file,errorCode,MKT_VALUETYPE_INT|MKT_UNSIGNED|MKT_UNSIGNED);
     
     myRawData = MKTR.readFile(file,errorCode);
     char taken;
